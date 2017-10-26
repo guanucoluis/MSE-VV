@@ -7,6 +7,7 @@
 ****************************************************/
 
 #include "Arduino.h"
+#include "Referencia.h"
 
 class Alarm
 {
@@ -17,5 +18,9 @@ class Alarm
     void disparar(void);    
     void detener(void);    
     void keepalive(void);
+  private:
+    Referencia ref;
+    int inRef;
+    
 };
 
