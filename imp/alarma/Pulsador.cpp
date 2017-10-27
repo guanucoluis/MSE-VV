@@ -18,11 +18,11 @@ Pulsador::Pulsador(void){
 }
 
 boolean Pulsador::get(void){
-  sensorDigital = digitalRead(pinSensor);
+  sensorDigital = digitalRead(pinPulso);
   return sensorDigital;
 }
 
 void Pulsador::setPin(int pin){
-  pinSensor = pin
-  pinMode(pinSensor, INPUT); 
+  pinPulso = pin;
+  pinMode(pinPulso, INPUT); 
 }

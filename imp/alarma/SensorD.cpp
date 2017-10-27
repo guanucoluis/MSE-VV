@@ -24,7 +24,7 @@ boolean SensorD::get(void){
 }
 
 void SensorD::setPin(int pin){
-  pinSensor = pin
+  pinSensor = pin;
   pinMode(pinSensor, INPUT); 
 }
 
