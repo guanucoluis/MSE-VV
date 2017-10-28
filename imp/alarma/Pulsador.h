@@ -8,15 +8,20 @@
 
 #include "Arduino.h"
 #include "Digital.h"
+#include "Button.h"
 
 class Pulsador : public Digital {
  private:
-  boolean pulso;
-  int pinPulso;
+  bool pulsado;
+  //  int pinPulso;
+  Button pulsadorCore(13,PULLUP); //FIXME pasar por parametro el pin
+  unsigned long registroTiempo;
+  unsigned long tiempoTranscurrido;
   
  public:
    Pulsador(void);
-   boolean get(void);
-   void setPin(int pin);
-   boolean check(void);
+   bool presionado(void);
+   unsigned long tiempoDesdePulsado(unsigned long);
+   bool pulsadorLiberado(void);
+   //   void setPin(int pin);
 };

@@ -14,15 +14,35 @@ Pulsador::Pulsador(void){
   #ifdef DEBUG
     Serial.println("Objeto Pulsador creado");
   #endif
-  pulso = false;
+  pulsado = false;
+  registroTiempo = 0;
+  tiempoTranscurrido = 0;
 }
 
-boolean Pulsador::get(void){
-  sensorDigital = digitalRead(pinPulso);
-  return sensorDigital;
+bool Pulsador::presionado(void){
+  pulsado = pulsadorCore.isPressed();
+  if(pulsado == true)
+    registroInicioTiempo = millis();
+  return pulsado;
 }
 
+unsigned long Pulsador::tiempoDesdePulsado(unsigned long tiempoActual){
+  if(registroTiempo > tiempoActual)
+    tiempoTranscurrido = tiempoActual + (4294967294 - registroInicioTiempo);
+  else
+    tiempoTranscurrido = tiempoActual - registroInicioTiempo;
+
+  return tiempoTranscurrido;
+}
+
+bool Pulsador::pulsadorLiberado(void){
+  return pulsadorCore.stateChanged();
+}
+
+/* FIXME
 void Pulsador::setPin(int pin){
   pinPulso = pin;
   pinMode(pinPulso, INPUT); 
 }
+*/
+
