@@ -11,30 +11,24 @@
 
 #define DEBUG
 
-int led = 13;
-
 Alarm alarma;
+
 
 // the setup routine runs once when you press reset:
 void setup() {                
-  // initialize the digital pin as an output.
-  pinMode(led, OUTPUT); 
   Serial.begin(9600);
   #ifdef DEBUG
     Serial.println("Habilitado puerto serie para debug");
   #endif
-  
   alarma.iniciar();
-  alarma.armar();
-  alarma.disparar();
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
-  digitalWrite(led, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);             
-  digitalWrite(led, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);     // wait for a second
-  alarma.detener();
 
+     if(alarma.armar() == false) //FIXME Revisar la lógica del true
+        alarma.disparar();
+     if(alarma.detener() == 5)
+        alarma.iniciar();
 }
+	

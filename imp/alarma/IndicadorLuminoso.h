@@ -8,7 +8,6 @@
 
 #include "Arduino.h"
 #include "Indicadores.h"
-#include "DigitalToggle.h"
 
 class IndicadorLuminoso : public Indicadores {
  private:
@@ -17,5 +16,6 @@ class IndicadorLuminoso : public Indicadores {
  public:
    IndicadorLuminoso(void);
    void setPin(int);
-   void toggle(void);   
+   void toggle(void);
+   void off(void);
 };

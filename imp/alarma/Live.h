@@ -1,21 +1,20 @@
 /****************************************************
-    nombre de archivo: Sirena.h
-    fecha: 27/10/2017
+    nombre de archivo: Live.h
+    fecha: 28/10/2017
     creado por: lguanuco
     version: 1.0
-    Descripcion: Declaración de la clase Sirena.
+    Descripcion: Declaración de la clase Live.
 ****************************************************/
 
 #include "Arduino.h"
 #include "Indicadores.h"
 
-class Sirena : public Indicadores {
+class Live : public Indicadores {
  private:
-  int pinSirena;
+  int pinLive;
   
  public:
-   Sirena(void);
+   Live(void);
    void setPin(int);
-   void toggle(void);
-   void off(void);
+   void generarSenal(void);   
 };

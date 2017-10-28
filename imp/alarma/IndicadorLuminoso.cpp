@@ -23,5 +23,12 @@ void IndicadorLuminoso::setPin(int pin){
 }
 
 void IndicadorLuminoso::toggle(void){
-  digitalToggle(pinIndicadorLuminoso);
+  digitalWrite(pinIndicadorLuminoso,HIGH);
+  delay(300); //FIXME definir en alto nivel
+  digitalWrite(pinIndicadorLuminoso,LOW);
+  delay(300); //FIXME definir en alto nivel
+}
+
+void IndicadorLuminoso::off(void){
+  digitalWrite(pinIndicadorLuminoso,LOW);
 }

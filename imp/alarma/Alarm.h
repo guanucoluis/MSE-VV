@@ -8,19 +8,30 @@
 
 #include "Arduino.h"
 #include "Referencia.h"
+#include "SensorA.h"
+#include "SensorD.h"
+#include "Pulsador.h"
+#include "Sirena.h"
+#include "Indicador.h"
+#include "Live.h"
 
 class Alarm
 {
   public:
     Alarm(void);
     void iniciar(void);
-    void armar(void);
+    boolean armar(void);
     void disparar(void);    
-    void detener(void);    
-    void keepalive(void);
+    int detener(void);    
   private:
+    
     Referencia ref;
-    int inRef;
+    SensorA sensorAnalogico;
+    SensorD sensorDigital;
+    Pulsador pulsadorControl;
+    Sirena sirenaOut;
+    IndicadoLuminoso indicador;
+    Live keepAlive;
     
 };
 

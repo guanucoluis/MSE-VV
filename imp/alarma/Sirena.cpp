@@ -23,6 +23,13 @@ void Sirena::setPin(int pin){
 }
 
 void Sirena::toggle(void){
-  digitalToggle(pinSirena);
+  digitalWrite(pinSirena,HIGH);
+  delay(300); //FIXME definir en alto nivel
+  digitalWrite(pinSirena,LOW);
+  delay(300); //FIXME definir en alto nivel
+}
+
+void Sirena::off(void){
+  digitalWrite(pinSirena,LOW);
 }
 
