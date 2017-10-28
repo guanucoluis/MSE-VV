@@ -6,6 +6,8 @@
     Descripcion: Clase abstracta, base para las 
                  diferentes entradas digitales
 ****************************************************/
+#ifndef DIGITAL_H
+#define DIGITAL_H
 
 #include "Arduino.h"
 #include "Inputs.h"
@@ -13,3 +15,5 @@
 class Digital : public Inputs {
   
 };
+
+#endif

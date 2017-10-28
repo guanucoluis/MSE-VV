@@ -12,7 +12,7 @@
 #include "SensorD.h"
 #include "Pulsador.h"
 #include "Sirena.h"
-#include "Indicador.h"
+#include "IndicadorLuminoso.h"
 #include "Live.h"
 
 class Alarm
@@ -23,15 +23,16 @@ class Alarm
     boolean armar(void);
     void disparar(void);    
     int detener(void);    
-  private:
-    
+
+ private:    
     Referencia ref;
     SensorA sensorAnalogico;
     SensorD sensorDigital;
     Pulsador pulsadorControl;
     Sirena sirenaOut;
-    IndicadoLuminoso indicador;
+    IndicadorLuminoso indicador;
     Live keepAlive;
+    unsigned long tiempoActual;
     
 };
 

@@ -14,8 +14,8 @@ class Pulsador : public Digital {
  private:
   bool pulsado;
   //  int pinPulso;
-  Button pulsadorCore(13,PULLUP); //FIXME pasar por parametro el pin
-  unsigned long registroTiempo;
+  Button pulsadorCore = Button(13,PULLUP); //FIXME pasar por parametro el pin
+  unsigned long registroInicioTiempo;
   unsigned long tiempoTranscurrido;
   
  public:

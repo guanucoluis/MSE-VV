@@ -11,7 +11,6 @@
 
 #define DEBUG 
 
-
 Alarm::Alarm()
 {
   #ifdef DEBUG
@@ -26,6 +25,7 @@ Alarm::Alarm()
 
     digitalWrite(0,LOW); //FIXME
     digitalWrite(2,LOW); //FIXME
+    tiempoActual = 0;
 }
 
 void Alarm::iniciar()
@@ -49,7 +49,7 @@ boolean Alarm::armar()
   #endif
     keepAlive.generarSenal();
     if(sensorAnalogico.get()>ref.get())
-      return true; //FIXME no se define la lógica del "true"
+      return true; //FIXME no se define la lógica del "true";
     else if (sensorDigital.get() == true)
       return true;
     else
@@ -73,9 +73,9 @@ int Alarm::detener()
   #ifdef DEBUG
     Serial.println("Metodo detener()");
   #endif
-    while(pulsadorControl.pulsadorLiberado == false)
+    while(pulsadorControl.pulsadorLiberado() == false)
       keepAlive.generarSenal();
-    tiempoActual = pulsadorControl.tiepoDesdePulsado(millis())
+    tiempoActual = pulsadorControl.tiempoDesdePulsado(millis());
     if(tiempoActual > 1000){
       if(tiempoActual < 5000)
 	return 5; //FIXME los límites de tiempo superados

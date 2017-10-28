@@ -29,7 +29,7 @@ void SensorD::setPin(int pin){
 }
 
 boolean SensorD::check(){
-  if(get())
+  if(get()==true)
     return false;
   else
     return true;

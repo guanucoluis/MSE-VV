@@ -15,7 +15,7 @@ Pulsador::Pulsador(void){
     Serial.println("Objeto Pulsador creado");
   #endif
   pulsado = false;
-  registroTiempo = 0;
+  registroInicioTiempo = 0;
   tiempoTranscurrido = 0;
 }
 
@@ -27,7 +27,7 @@ bool Pulsador::presionado(void){
 }
 
 unsigned long Pulsador::tiempoDesdePulsado(unsigned long tiempoActual){
-  if(registroTiempo > tiempoActual)
+  if(registroInicioTiempo > tiempoActual)
     tiempoTranscurrido = tiempoActual + (4294967294 - registroInicioTiempo);
   else
     tiempoTranscurrido = tiempoActual - registroInicioTiempo;

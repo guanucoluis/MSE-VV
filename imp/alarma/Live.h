@@ -16,5 +16,6 @@ class Live : public Indicadores {
  public:
    Live(void);
    void setPin(int);
-   void generarSenal(void);   
+   void generarSenal(void);
+   void off(void);
 };

@@ -28,3 +28,7 @@ void Live::generarSenal(void){
   delay(200); //FIXME Buscar requerimiento de este tiempo
   digitalWrite(pinLive,LOW);
 }
+
+void Live::off(void){ //FIXME Nunca se utiliza
+  digitalWrite(pinLive,LOW);
+}

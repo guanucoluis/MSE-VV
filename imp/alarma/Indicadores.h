@@ -6,11 +6,14 @@
     Descripcion: Clase abstracta, base para las 
                  diferentes salidas
 ****************************************************/
+#ifndef INDICADORES_H
+#define INDICADORES_H
 
 #include "Arduino.h"
 
 class Indicadores {
  public:
-  virtual void on(void) = 0;
   virtual void off(void) = 0;
 };
+
+#endif

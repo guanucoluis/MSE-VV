@@ -6,11 +6,15 @@
     Descripcion: Clase abstracta, base para las 
                  diferentes entradas
 ****************************************************/
+#ifndef INPUTS_H
+#define INPUTS_H
 
 #include "Arduino.h"
 
 class Inputs {
- public:
-  virtual int get(void) = 0;
-
+  
 };
+
+#endif
+
+
