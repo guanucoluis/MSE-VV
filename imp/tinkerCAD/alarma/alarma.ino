@@ -39,6 +39,9 @@ class Referencia : public Analogica {
 };
 
 Referencia::Referencia(void){
+  #ifdef DEBUG
+    Serial.println("Objeto Referencia creado");
+  #endif  
   refAnalogica = 0;
 }
 
@@ -127,7 +130,7 @@ boolean SensorD::get(void){
 
 void SensorD::setPin(int pin){
   pinSensor = pin;
-  pinMode(pinSensor, INPUT); 
+  pinMode(pinSensor, INPUT_PULLUP); 
 }
 
 boolean SensorD::check(){
@@ -253,7 +256,7 @@ class Pulsador : public Digital {
  private:
   bool pulsado;
   //  int pinPulso;
-  Button pulsadorCore = Button(13,PULLUP); //FIXME pasar por parametro el pin
+  Button pulsadorCore = Button(12,PULLUP); //FIXME pasar por parametro el pin
   unsigned long registroInicioTiempo;
   unsigned long tiempoTranscurrido;
   
@@ -276,7 +279,7 @@ Pulsador::Pulsador(void){
 
 bool Pulsador::presionado(void){
   pulsado = pulsadorCore.isPressed();
-  if(pulsado == true)
+  if(pulsado == true && pulsadorLiberado() == true)
     registroInicioTiempo = millis();
   return pulsado;
 }
@@ -286,7 +289,6 @@ unsigned long Pulsador::tiempoDesdePulsado(unsigned long tiempoActual){
     tiempoTranscurrido = tiempoActual + (4294967294 - registroInicioTiempo);
   else
     tiempoTranscurrido = tiempoActual - registroInicioTiempo;
-
   return tiempoTranscurrido;
 }
 
@@ -332,9 +334,9 @@ void Sirena::setPin(int pin){
 
 void Sirena::toggle(void){
   digitalWrite(pinSirena,HIGH);
-  delay(300); //FIXME definir en alto nivel
+  delay(200); //FIXME definir en alto nivel
   digitalWrite(pinSirena,LOW);
-  delay(300); //FIXME definir en alto nivel
+  delay(200); //FIXME definir en alto nivel
 }
 
 void Sirena::off(void){
@@ -371,9 +373,9 @@ void IndicadorLuminoso::setPin(int pin){
 
 void IndicadorLuminoso::toggle(void){
   digitalWrite(pinIndicadorLuminoso,HIGH);
-  delay(300); //FIXME definir en alto nivel
+  delay(200); //FIXME definir en alto nivel
   digitalWrite(pinIndicadorLuminoso,LOW);
-  delay(300); //FIXME definir en alto nivel
+  delay(200); //FIXME definir en alto nivel
 }
 
 void IndicadorLuminoso::off(void){
@@ -418,6 +420,7 @@ void Live::off(void){ //FIXME Nunca se utiliza
   digitalWrite(pinLive,LOW);
 }
 
+
 /////////////////////////////////////////
 // Clase principal del sistema alarma. //
 /////////////////////////////////////////
@@ -430,6 +433,7 @@ class Alarm
     boolean armar(void);
     void disparar(void);    
     int detener(void);    
+    void desarmar(void);
 
  private:    
     Referencia ref;
@@ -466,7 +470,7 @@ void Alarm::iniciar()
     Serial.println("Metodo iniciar()");
   #endif
     digitalWrite(0,HIGH);
-    while(sensorAnalogico.check(ref.get()) & sensorDigital.check()){
+    while((sensorAnalogico.check(ref.get()) == false) || (sensorDigital.check() == false)){
       digitalWrite(2,HIGH);
       delay(200); //FIXME
       digitalWrite(2,LOW);
@@ -480,10 +484,8 @@ boolean Alarm::armar()
     Serial.println("Metodo armar()");
   #endif
     keepAlive.generarSenal();
-    if(sensorAnalogico.get()>ref.get())
-      return true; //FIXME no se define la lógica del "true";
-    else if (sensorDigital.get() == true)
-      return true;
+    if((sensorAnalogico.get()>ref.get()) || (sensorDigital.get() == true))
+      return true; //FIXME no se define la lógica del "true"
     else
       return false;      
 }
@@ -493,39 +495,42 @@ void Alarm::disparar()
 #ifdef DEBUG
   Serial.println("Metodo disparar()");
 #endif
-  while(pulsadorControl.presionado() == false){    
     sirenaOut.toggle();
     indicador.toggle();
-    keepAlive.generarSenal();
-  }
-}            
+}
 
 int Alarm::detener()
 {
   #ifdef DEBUG
     Serial.println("Metodo detener()");
   #endif
-    while(pulsadorControl.pulsadorLiberado() == false)
-      keepAlive.generarSenal();
-    tiempoActual = pulsadorControl.tiempoDesdePulsado(millis());
-    if(tiempoActual > 1000){
-      if(tiempoActual < 5000)
-	return 5; //FIXME los límites de tiempo superados
-      else
-	{
-	  sirenaOut.off();
-	  indicador.off();
-	  return 1; //FIXME los límites de tiempo superados
-	}      
+  if(pulsadorControl.presionado() == true)
+    return 10;
+  else {
+    if (pulsadorControl.pulsadorLiberado() == true){
+      tiempoActual = pulsadorControl.tiempoDesdePulsado(millis());
+      if(tiempoActual > 1000){
+        if(tiempoActual > 5000)
+          return 5; //FIXME los límites de tiempo superados
+        else
+	  return 1; //FIXME los límites de tiempo superado
+      }
     }
     else
       return 0;
+  } 
 }
+
+void Alarm::desarmar()
+{
+  sirenaOut.off();
+  indicador.off();
+}
+
 
 //////////////////////////////////////////////////////////////////////
 
 Alarm alarma;
-
 
 // the setup routine runs once when you press reset:
 void setup() {                
@@ -539,10 +544,26 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
 
-     if(alarma.armar() == false) //FIXME Revisar la lógica del true
-        alarma.disparar();
-     if(alarma.detener() == 5)
-        alarma.iniciar();
+  if(alarma.armar() == true) //FIXME Revisar la lógica del true
+    alarma.disparar();
+
+  switch(alarma.detener()){
+    case 0: //no se presiono el boton
+      break;
+    case 1: //paso entre 1 y 5 segundos
+      alarma.desarmar();
+      break;
+    case 5: //paso mas de 5 segundos
+      alarma.iniciar();
+      break;
+    case 10://se presiono el boton pero esta sin liberar
+      break; 
+    default:
+      break;
+  }
+  
+  delay(200); // FIXME maneja el tick del Loop()
+  
 }
 
 
