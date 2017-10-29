@@ -7,7 +7,9 @@
                   plataforma arduinoUNO.
 */
 
-#define DEBUG
+// Para obtener informacion del sofware se puede utilizar
+// el puerto serial. Para esto no-comentar la siguiente linea
+// #define DEBUG 
 
 ////////////////////////////////////////////////////////
 // Clase abstracta, base para las diferentes entradas //
@@ -434,7 +436,7 @@ class Alarm
     void disparar(void);    
     int detener(void);    
     void desarmar(void);
-
+    void keepAliveSenal(void);
  private:    
     Referencia ref;
     SensorA sensorAnalogico;
@@ -444,6 +446,7 @@ class Alarm
     IndicadorLuminoso indicador;
     Live keepAlive;
     unsigned long tiempoActual;
+    int valorRefAnalogica;
     
 };
 
@@ -470,7 +473,8 @@ void Alarm::iniciar()
     Serial.println("Metodo iniciar()");
   #endif
     digitalWrite(0,HIGH);
-    while((sensorAnalogico.check(ref.get()) == false) || (sensorDigital.check() == false)){
+    valorRefAnalogica = ref.get();
+    while((sensorAnalogico.check(valorRefAnalogica) == false) || (sensorDigital.check() == false)){
       digitalWrite(2,HIGH);
       delay(200); //FIXME
       digitalWrite(2,LOW);
@@ -483,8 +487,7 @@ boolean Alarm::armar()
   #ifdef DEBUG
     Serial.println("Metodo armar()");
   #endif
-    keepAlive.generarSenal();
-    if((sensorAnalogico.get()>ref.get()) || (sensorDigital.get() == true))
+    if((sensorAnalogico.get()>valorRefAnalogica) || (sensorDigital.get() == true))
       return true; //FIXME no se define la lógica del "true"
     else
       return false;      
@@ -527,43 +530,56 @@ void Alarm::desarmar()
   indicador.off();
 }
 
+void Alarm::keepAliveSenal()
+{
+  keepAlive.generarSenal();
+}
 
 //////////////////////////////////////////////////////////////////////
 
 Alarm alarma;
+boolean alarmaDisparadaFlag;
 
 // the setup routine runs once when you press reset:
-void setup() {                
+void setup() {
+#ifdef DEBUG  
   Serial.begin(9600);
-  #ifdef DEBUG
-    Serial.println("Habilitado puerto serie para debug");
-  #endif
+  Serial.println("Habilitado puerto serie para debug");
+#endif
   alarma.iniciar();
+  alarmaDisparadaFlag = false;
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
 
-  if(alarma.armar() == true) //FIXME Revisar la lógica del true
+  if(alarmaDisparadaFlag == false){
+    if(alarma.armar() == true){ //FIXME Revisar la lógica del true
+      alarma.disparar();
+      alarmaDisparadaFlag = true;
+    }
+  }
+  else {
     alarma.disparar();
-
-  switch(alarma.detener()){
+    switch(alarma.detener()){
     case 0: //no se presiono el boton
       break;
     case 1: //paso entre 1 y 5 segundos
       alarma.desarmar();
+      alarmaDisparadaFlag = false;
       break;
     case 5: //paso mas de 5 segundos
       alarma.iniciar();
+      alarmaDisparadaFlag = false;      
       break;
     case 10://se presiono el boton pero esta sin liberar
       break; 
     default:
       break;
+    }
   }
-  
-  delay(200); // FIXME maneja el tick del Loop()
-  
-}
 
+  alarma.keepAliveSenal();
+
+}
 
