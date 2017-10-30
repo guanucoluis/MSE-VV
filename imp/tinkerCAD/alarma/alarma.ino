@@ -416,6 +416,7 @@ void Live::generarSenal(void){
   digitalWrite(pinLive,HIGH);
   delay(200); //FIXME Buscar requerimiento de este tiempo
   digitalWrite(pinLive,LOW);
+  delay(200); //FIXME Buscar requerimiento de este tiempo
 }
 
 void Live::off(void){ //FIXME Nunca se utiliza
@@ -447,6 +448,8 @@ class Alarm
     Live keepAlive;
     unsigned long tiempoActual;
     int valorRefAnalogica;
+    int pinIndicadorError;
+    int pinIndicador1;
     
 };
 
@@ -461,9 +464,11 @@ Alarm::Alarm()
     sirenaOut.setPin(8); //FIXME hacerlo en alto nivel
     indicador.setPin(7); //FIXME hacerlo en alto nivle
     keepAlive.setPin(1); //FIXME hacerlo en alto nivle
+    pinIndicador1 = 0;
+    pinIndicadorError = 2;
 
-    digitalWrite(0,LOW); //FIXME
-    digitalWrite(2,LOW); //FIXME
+    pinMode(pinIndicador1,OUTPUT); //FIXME
+    pinMode(pinIndicadorError,OUTPUT); //FIXME
     tiempoActual = 0;
 }
 
@@ -472,14 +477,15 @@ void Alarm::iniciar()
   #ifdef DEBUG
     Serial.println("Metodo iniciar()");
   #endif
-    digitalWrite(0,HIGH);
+    digitalWrite(pinIndicador1,HIGH);
     valorRefAnalogica = ref.get();
     while((sensorAnalogico.check(valorRefAnalogica) == false) || (sensorDigital.check() == false)){
-      digitalWrite(2,HIGH);
-      delay(200); //FIXME
-      digitalWrite(2,LOW);
+      digitalWrite(pinIndicadorError,HIGH);
+      delay(500); //FIXME
+      digitalWrite(pinIndicadorError,LOW);
+      delay(500); //FIXME
     }
-    digitalWrite(2,HIGH);
+    digitalWrite(pinIndicadorError,HIGH);
 }
 
 boolean Alarm::armar()
